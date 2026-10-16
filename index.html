@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>靈魂動物與精神棲息地測驗</title>
+  <!-- 引入 Google 圓潤質感中文字體 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%);
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --primary: #c084fc;
+      --primary-hover: #d8b4fe;
+      --accent: #38bdf8;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 背景動態高級光暈球 */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: -1;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    body::before {
+      top: 10%;
+      left: 10%;
+      background: #a855f7;
+    }
+    body::after {
+      bottom: 10%;
+      right: 10%;
+      background: #0ea5e9;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 540px;
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 可愛標頭提示標籤 */
+    .notice-wrapper {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .notice-tag {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: #e9d5ff;
+      background: rgba(192, 132, 252, 0.15);
+      border: 1px dashed rgba(192, 132, 252, 0.4);
+      padding: 6px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hidden { display: none !important; }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+      background: linear-gradient(to right, #c084fc, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* Emoji 浮動呼吸與動態光影動畫 */
+    .hero-icon {
+      font-size: 4.5rem;
+      text-align: center;
+      margin: 16px auto;
+      display: block;
+      animation: floatEmoji 3.2s ease-in-out infinite;
+    }
+
+    @keyframes floatEmoji {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 8px 12px rgba(192, 132, 252, 0.25));
+      }
+      50% {
+        transform: translateY(-10px) scale(1.06);
+        filter: drop-shadow(0 16px 20px rgba(56, 189, 248, 0.45));
+      }
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(192, 132, 252, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: none;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    .question-count {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .question-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      text-align: left;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .option-btn:hover {
+      background: rgba(192, 132, 252, 0.18);
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .result-header { text-align: center; margin-bottom: 20px; }
+
+    .result-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .result-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .battery-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .battery-level {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-group { margin-bottom: 16px; }
+
+    .stat-item { margin-bottom: 8px; }
+
+    .stat-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .stat-bar-bg {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .desc-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    .recharge-box {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #e0f2fe;
+      margin-bottom: 16px;
+    }
+
+    .match-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .match-item {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.82rem;
+    }
+
+    .match-item span {
+      display: block;
+      color: var(--text-sub);
+      font-size: 0.72rem;
+      margin-bottom: 2px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(16, 185, 129, 0.95);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container fade-in" id="app">
+    <!-- 封面頁面 -->
+    <div id="start-screen">
+      <div class="notice-wrapper">
+        <span class="notice-tag">✨ 這是我的通識課作業 希望大家不要太苛刻 ⸜(｡˃ ᵕ ˂ )⸝♡ ✨</span>
+      </div>
+      <div class="hero-icon">🔮</div>
+      <h1 class="title">靈魂動物與精神棲息地</h1>
+      <p class="subtitle">社交完覺得心累，還是越聊越嗨？10 道題測出你的「靈魂動物型態」、「社交電池容量」與最佳充電棲息地。</p>
+      <button class="btn" onclick="startQuiz()">開啟測驗</button>
+    </div>
+
+    <!-- 測驗頁面 -->
+    <div id="quiz-screen" class="hidden">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="question-count" id="question-count">Question 1 / 10</div>
+      <h2 class="question-title" id="question-text">題目文字載入中...</h2>
+      <div class="options-list" id="options-container"></div>
+    </div>
+
+    <!-- 結果頁面 -->
+    <div id="result-screen" class="hidden">
+      <div class="result-header">
+        <div class="result-badge" id="res-shield">防護罩載入中</div>
+        <div class="hero-icon" id="res-icon">🪼</div>
+        <h2 class="result-title" id="res-title">深海微光水母</h2>
+      </div>
+
+      <div class="battery-status">
+        <span style="color: var(--text-sub); font-size: 0.85rem;">預設社交電池容量</span>
+        <span class="battery-level" id="res-battery">15%</span>
+      </div>
+
+      <div class="stat-group">
+        <div class="stat-item">
+          <div class="stat-label"><span>獨處需求度</span><span id="stat-solo-val">95%</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-solo-bar" style="width: 95%;"></div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label"><span>感官敏感度</span><span id="stat-sens-val">90%</span></div>
+          <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-sens-bar" style="width: 90%; background: var(--accent);"></div></div>
+        </div>
+      </div>
+
+      <div class="desc-box" id="res-desc">
+        分析載入中...
+      </div>
+
+      <div class="recharge-box" id="res-recharge">
+        ⚡ 專屬充電建議載入中...
+      </div>
+
+      <div class="match-box">
+        <div class="match-item">
+          <span>靈魂共振搭檔</span>
+          <strong id="res-best" style="color: #34d399;">-</strong>
+        </div>
+        <div class="match-item">
+          <span>能量相剋對象</span>
+          <strong id="res-worst" style="color: #f87171;">-</strong>
+        </div>
+      </div>
+
+      <button class="btn" onclick="copyResult()">一鍵複製測驗結果</button>
+      <button class="btn btn-secondary" onclick="restartQuiz()">重新測驗</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">測驗結果已成功複製到剪貼簿！</div>
+
+  <script>
+    const questions = [
+      {
+        text: "1. 週末下午突然收到朋友群組的臨時聚會邀約訊息，你的第一反應？",
+        options: [
+          { text: "直接出門！熱鬧的場合怎麼能少了自己", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "看當天心情與對象，需要經過 5 分鐘心理建設", weights: { FOX: 3, CAT: 2 } },
+          { text: "覺得自己的規劃被打破了，默默尋找禮貌推託的理由", weights: { JELLY: 3, HEDGEHOG: 2 } },
+          { text: "回覆：「可能晚點再去放空」或「今天想宅在家」", weights: { CAPYBARA: 3, OWL: 2 } }
+        ]
+      },
+      {
+        text: "2. 聚會進行到第 2 個小時，包廂氣氛正高漲時，你在做什麼？",
+        options: [
+          { text: "繼續帶動現場氣氛，或是跟大家暢聊新鮮事", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "保持優雅微笑，偶爾回應，但眼神開始飄向窗外放空", weights: { FOX: 3, CAPYBARA: 2 } },
+          { text: "悄悄戴上一隻耳機，或找角落玩手機進入個人結界", weights: { CAT: 3, OWL: 2 } },
+          { text: "感到強烈的心累感，靈魂早已離場回到房間", weights: { JELLY: 3, HEDGEHOG: 2 } }
+        ]
+      },
+      {
+        text: "3. 手機突然跳出不熟的人打來的語音通話，你的反應？",
+        options: [
+          { text: "秒接起來：「喂～怎麼啦？」完全不緊張", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "看著螢幕響到靜音，事後再傳文字訊息詢問情況", weights: { HEDGEHOG: 3, JELLY: 2 } },
+          { text: "稍微皺眉，等幾秒調整好聲線與情緒後再接起", weights: { FOX: 3, CAT: 2 } },
+          { text: "不喜歡突如其來的聲音干擾，等它響完再評估要不要回", weights: { OWL: 3, CAPYBARA: 2 } }
+        ]
+      },
+      {
+        text: "4. 結束高強度的一天回到家，關上門的第一個動作？",
+        options: [
+          { text: "衣服還沒換，直接倒在床上感受寂靜與安靜", weights: { JELLY: 3, CAPYBARA: 2 } },
+          { text: "立刻放喜歡的音樂或影片，創造熟悉的私人氛圍", weights: { DOLPHIN: 3, CAT: 2 } },
+          { text: "換上最舒服的家居服，縮在角落放空滑手機", weights: { HEDGEHOG: 3, OWL: 2 } },
+          { text: "第一時間在社群發限時動態，或是跟朋友分享今日趣事", weights: { SHIBA: 3, FOX: 2 } }
+        ]
+      },
+      {
+        text: "5. 在團體分組合作或活動企劃中，你通常傾向扮演什麼角色？",
+        options: [
+          { text: "隊長或召集人，主動推進進度並帶領討論", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "協調者或公關，優雅整合大家的意見與情緒", weights: { FOX: 3, DOLPHIN: 2 } },
+          { text: "安靜執行者，默默把分配到的工作做到完美，少聊天", weights: { CAPYBARA: 3, CAT: 2 } },
+          { text: "幕後智囊，深夜一個人靈感爆發產出高質量企劃", weights: { OWL: 3, HEDGEHOG: 2 } }
+        ]
+      },
+      {
+        text: "6. 當朋友向你傾倒大量的負面情緒與苦水時，你的內心感受？",
+        options: [
+          { text: "容易產生共感，陪伴對方並給予深度的溫暖陪伴", weights: { DOLPHIN: 3, HEDGEHOG: 2 } },
+          { text: "給予禮貌且體貼的安慰，但內心保持距離不受波及", weights: { FOX: 3, CAPYBARA: 2 } },
+          { text: "感到情緒防線被重擊，事後需要長時間一個人淨化", weights: { JELLY: 3, HEDGEHOG: 2 } },
+          { text: "試圖理性分析問題並給予解決建議，比較少情緒波動", weights: { OWL: 3, CAT: 2 } }
+        ]
+      },
+      {
+        text: "7. 當你的精神電量降到 0% 時，你最想躲進哪種環境復原？",
+        options: [
+          { text: "拉上窗簾、寂靜無聲的深色房間角落", weights: { JELLY: 3, HEDGEHOG: 2 } },
+          { text: "播放微弱音樂、有微弱背景喧囂但不需交談的咖啡廳", weights: { CAT: 3, CAPYBARA: 2 } },
+          { text: "深夜一個人散步的街角或駛過的公車後座", weights: { OWL: 3, FOX: 2 } },
+          { text: "找最懂自己的真心好友，一對一深度聊天傾訴", weights: { DOLPHIN: 3, SHIBA: 2 } }
+        ]
+      },
+      {
+        text: "8. 規劃一趟理想的假期旅行，你最喜歡哪種模式？",
+        options: [
+          { text: "熱鬧的團體行程，大家一起玩樂拍照才過癮", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "極簡自由行，排少少景點，大部分時間在飯店放空", weights: { CAPYBARA: 3, CAT: 2 } },
+          { text: "一個人探險或兩三人質感小旅行，隨心所欲切換頻道", weights: { FOX: 3, OWL: 2 } },
+          { text: "完全不規劃，隨興躲進遠離喧囂的自然或山海間", weights: { JELLY: 3, HEDGEHOG: 2 } }
+        ]
+      },
+      {
+        text: "9. 凌晨一點還沒睡，房間關著燈，你的腦袋此時通常在運作什麼？",
+        options: [
+          { text: "各種哲學思考、知識探索或是突發奇想的創意", weights: { OWL: 3, DOLPHIN: 2 } },
+          { text: "回想今天的人際互動細節，檢視自己是否有失禮", weights: { HEDGEHOG: 3, FOX: 2 } },
+          { text: "腦袋像水一樣完全靜止放空，純粹享受黑夜的寂靜", weights: { JELLY: 3, CAPYBARA: 2 } },
+          { text: "刷著短影片或社群，尋找感興趣的下個活動話題", weights: { CAT: 3, SHIBA: 2 } }
+        ]
+      },
+      {
+        text: "10. 對你來說，怎樣才算一個人真正「進入了你的真心內心圈子」？",
+        options: [
+          { text: "可以一起待在同個空間完全不說話，也不會感到尷尬", weights: { CAT: 3, CAPYBARA: 2 } },
+          { text: "能毫無保留地對他展示自己脆弱、軟爛的一面", weights: { HEDGEHOG: 3, JELLY: 2 } },
+          { text: "能進行思想上的碰撞與深度共鳴，聽懂彼此的弦外之音", weights: { DOLPHIN: 3, OWL: 2 } },
+          { text: "隨時約隨時走，在一起永遠充滿歡笑與正面能量", weights: { SHIBA: 3, FOX: 2 } }
+        ]
+      }
+    ];
+
+    const animalResults = {
+      JELLY: {
+        title: "深海微光水母",
+        icon: "🪼",
+        battery: "15%",
+        shield: "防護罩：鋼鐵防空洞級",
+        solo: "95%",
+        sens: "90%",
+        desc: "你的社交電池極小，對於喧囂與情緒波動極度敏感。聚會完畢後，你必須獨自回到「無人深海」中無聲漂浮才能恢復能量。對你而言，最好的陪伴就是『無聲的安靜』。",
+        recharge: "⚡ 專屬充電建議：拉上遮光窗簾、戴上抗噪耳機，在無聲的暗室裡獨自放空 1 小時，完全切斷所有通訊軟體通知。",
+        best: "深夜思考貓頭鷹",
+        worst: "不斷電太陽柴犬"
+      },
+      HEDGEHOG: {
+        title: "蜷縮防禦刺蝟",
+        icon: "🦔",
+        battery: "25%",
+        shield: "防護罩：刺刺防禦鎧甲",
+        solo: "88%",
+        sens: "85%",
+        desc: "你外表看似有防備心，其實內心極度溫柔與細膩。在不熟悉的環境中你會豎起防護刺，需要時間與安全感才能慢慢放鬆。一旦被你認定，你就是最真誠的朋友。",
+        recharge: "⚡ 專屬充電建議：窩在有安全感的被窩角落，看一本溫暖的繪本或重溫熟悉的老電影，讓繃緊的神經慢慢放鬆。",
+        best: "高頻共振海豚",
+        worst: "不斷電太陽柴犬"
+      },
+      CAPYBARA: {
+        title: "靜音佛系水豚",
+        icon: "🦫",
+        battery: "35%",
+        shield: "防護罩：微溫泡湯結界",
+        solo: "75%",
+        sens: "50%",
+        desc: "你具備極強的情緒穩定度，不吵不鬧、情緒起伏極低。即使身處人群中，你的心智也能切換到『靜音模式』，外界的各種抓馬與紛擾幾乎動搖不了你。",
+        recharge: "⚡ 專屬充電建議：去泡個熱水澡、去安靜的公園散步，或是找個微溫的咖啡廳角落坐著「合法放空」。",
+        best: "高冷屋頂貓咪",
+        worst: "優雅防線赤狐"
+      },
+      CAT: {
+        title: "高冷屋頂貓咪",
+        icon: "🐈",
+        battery: "45%",
+        shield: "防護罩：屋頂個人邊界線",
+        solo: "70%",
+        sens: "65%",
+        desc: "你是個人邊界感的主人。你享受社交，但更看重空間獨立性。你最理想的相處模式是『待在同個空間，但各自做自己的事，互不打擾』，優雅且獨立。",
+        recharge: "⚡ 專屬充電建議：進行「平行獨處」——和懂你的朋友待在同個空間，但各自聽音樂、滑手機，完全不強求講話。",
+        best: "靜音佛系水豚",
+        worst: "不斷電太陽柴犬"
+      },
+      OWL: {
+        title: "深夜思考貓頭鷹",
+        icon: "🦉",
+        battery: "55%",
+        shield: "防護罩：夜視隱形斗篷",
+        solo: "80%",
+        sens: "80%",
+        desc: "白天的你常處於低功耗待機狀態，一到夜深人靜，你的感官與思維靈敏度瞬間爆表。你適合在安靜的深夜進行深度學習、創作或自我對話，獨享夜晚的靈感。",
+        recharge: "⚡ 專屬充電建議：保留深夜 12 點後的 2 小時個人時光，開一盞暖光檯燈，進行創作、閱讀或寫寫日記。",
+        best: "深海微光水母",
+        worst: "不斷電太陽柴犬"
+      },
+      FOX: {
+        title: "優雅防線赤狐",
+        icon: "🦊",
+        battery: "65%",
+        shield: "防護罩：隱形社交薄膜",
+        solo: "60%",
+        sens: "70%",
+        desc: "你擁有高情商與極佳的觀察力，對大家都客客氣氣且非常會聊天。然而你內心防線分明，很少有人能真正跨越那層薄膜走進你的核心圈子。",
+        recharge: "⚡ 專屬充電建議：從社交場合優雅抽身後，去獨立書店或質感藝廊走走，進行視覺與感官的深度洗滌。",
+        best: "高頻共振海豚",
+        worst: "靜音佛系水豚"
+      },
+      DOLPHIN: {
+        title: "高頻共振海豚",
+        icon: "🐬",
+        battery: "80%",
+        shield: "防護罩：超音波共振頻率",
+        solo: "40%",
+        sens: "85%",
+        desc: "你熱愛高質量的交流與陪伴，討厭流於表面或無聊的社交。只要遇到對頻的人，你可以跟對方從哲學聊到宇宙。你的共感力極強，是朋友眼中最好的傾聽者。",
+        recharge: "⚡ 專屬充電建議：找 1 位真正對頻的真心知己進行一對一深度對話，或是聽一輯能引發心靈共鳴的 Podcast。",
+        best: "蜷縮防禦刺蝟",
+        worst: "靜音佛系水豚"
+      },
+      SHIBA: {
+        title: "不斷電太陽柴犬",
+        icon: "🐶",
+        battery: "95%",
+        shield: "防護罩：趨近於零 (敞開門)",
+        solo: "15%",
+        sens: "30%",
+        desc: "你就是行動充電寶！社交場合對你來說不是消耗，而是補充能量的太陽。你熱情、怕無聊，隨時都準備發起新的聚會與冒險，自帶溫暖光芒。",
+        recharge: "⚡ 專屬充電建議：你的充電方式是「換個地方繼續嗨」！去戶外運動跑步、探訪新餐廳，或發起一趟隨興的小旅行。",
+        best: "優雅防線赤狐",
+        worst: "深海微光水母"
+      }
+    };
+
+    let currentQ = 0;
+    let animalScores = { JELLY: 0, HEDGEHOG: 0, CAPYBARA: 0, CAT: 0, OWL: 0, FOX: 0, DOLPHIN: 0, SHIBA: 0 };
+
+    function startQuiz() {
+      document.getElementById("start-screen").classList.add("hidden");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      currentQ = 0;
+      animalScores = { JELLY: 0, HEDGEHOG: 0, CAPYBARA: 0, CAT: 0, OWL: 0, FOX: 0, DOLPHIN: 0, SHIBA: 0 };
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      document.getElementById("question-count").innerText = `Question ${currentQ + 1} / ${questions.length}`;
+      document.getElementById("question-text").innerText = q.text;
+      
+      const progressPercent = ((currentQ + 1) / questions.length) * 100;
+      document.getElementById("progress-bar").style.width = `${progressPercent}%`;
+
+      const optionsContainer = document.getElementById("options-container");
+      optionsContainer.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = opt.text;
+        btn.onclick = () => selectOption(opt.weights);
+        optionsContainer.appendChild(btn);
+      });
+
+      const quizScreen = document.getElementById("quiz-screen");
+      quizScreen.classList.remove("fade-in");
+      void quizScreen.offsetWidth;
+      quizScreen.classList.add("fade-in");
+    }
+
+    function selectOption(weights) {
+      for (const [key, val] of Object.entries(weights)) {
+        if (animalScores[key] !== undefined) {
+          animalScores[key] += val;
+        }
+      }
+
+      currentQ++;
+      if (currentQ < questions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+
+      let maxKey = "JELLY";
+      let maxScore = -1;
+      for (const [key, score] of Object.entries(animalScores)) {
+        if (score > maxScore) {
+          maxScore = score;
+          maxKey = key;
+        }
+      }
+
+      const res = animalResults[maxKey];
+      document.getElementById("res-title").innerText = res.title;
+      document.getElementById("res-icon").innerText = res.icon;
+      document.getElementById("res-shield").innerText = res.shield;
+      document.getElementById("res-battery").innerText = res.battery;
+      document.getElementById("res-desc").innerText = res.desc;
+      document.getElementById("res-recharge").innerText = res.recharge;
+      document.getElementById("res-best").innerText = res.best;
+      document.getElementById("res-worst").innerText = res.worst;
+
+      document.getElementById("stat-solo-val").innerText = res.solo;
+      document.getElementById("stat-solo-bar").style.width = res.solo;
+      document.getElementById("stat-sens-val").innerText = res.sens;
+      document.getElementById("stat-sens-bar").style.width = res.sens;
+
+      const resScreen = document.getElementById("result-screen");
+      resScreen.classList.add("fade-in");
+    }
+
+    function restartQuiz() {
+      document.getElementById("result-screen").classList.add("hidden");
+      document.getElementById("start-screen").classList.remove("hidden");
+    }
+
+    function copyResult() {
+      const title = document.getElementById("res-title").innerText;
+      const battery = document.getElementById("res-battery").innerText;
+      const shield = document.getElementById("res-shield").innerText;
+      const recharge = document.getElementById("res-recharge").innerText;
+      const text = `【靈魂動物與精神棲息地測驗】\n我的靈魂型態是：${title}！\n預設社交電池容量：${battery}\n${shield}\n${recharge}\n快來測測你的靈魂動物吧！`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.remove("hidden");
+        setTimeout(() => toast.classList.add("hidden"), 2200);
+      });
+    }
+  </script>
+</body>
+</html>
