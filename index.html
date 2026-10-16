@@ -10,14 +10,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%);
-      --card-bg: rgba(255, 255, 255, 0.07);
-      --card-border: rgba(255, 255, 255, 0.15);
+      --bg-gradient: linear-gradient(135deg, #070710 0%, #0d0b25 50%, #15092a 100%);
+      /* 將原本太淡的透明色，改為實用且高對比的深夜藍紫色 */
+      --card-bg: #14112e; 
+      --card-border: rgba(192, 132, 252, 0.35);
       --primary: #c084fc;
       --primary-hover: #d8b4fe;
       --accent: #38bdf8;
-      --text-main: #f8fafc;
-      --text-sub: #94a3b8;
+      --text-main: #ffffff; /* 確保主文字絕對為純白色 */
+      --text-sub: #cbd5e1;  /* 次要文字提升亮度，防曝光看不到 */
     }
 
     * {
@@ -29,49 +30,55 @@
 
     body {
       min-height: 100vh;
+      background: #090614; /* 兜底極暗背景色，防止手機渲染遺失 */
       background: var(--bg-gradient);
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
       position: relative;
       overflow-x: hidden;
     }
 
-    /* 背景動態高級光暈球 */
+    /* 背景動態高級光暈球（稍微調暗避免手機過曝） */
     body::before, body::after {
       content: "";
       position: fixed;
-      width: 320px;
-      height: 320px;
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
-      filter: blur(100px);
+      filter: blur(120px);
       z-index: -1;
-      opacity: 0.45;
+      opacity: 0.3;
       pointer-events: none;
     }
     body::before {
       top: 10%;
       left: 10%;
-      background: #a855f7;
+      background: #8b5cf6;
     }
     body::after {
       bottom: 10%;
       right: 10%;
-      background: #0ea5e9;
+      background: #0284c7;
     }
 
+    /* 測驗外框 - 移除會出錯的 blur 屬性，改用 100% 紮實不透光設計，解決「畫面很亮/曝光」*/
     .container {
       width: 100%;
-      max-width: 540px;
+      max-width: 500px;
       background: var(--card-bg);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      padding: 32px 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      padding: 28px 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    #capture-area {
+      background: #14112e !important; /* 確保截圖時背景有深色底，不穿透慘白 */
+      padding: 12px;
+      border-radius: 16px;
     }
 
     /* 可愛標頭提示標籤 */
@@ -82,11 +89,11 @@
 
     .notice-tag {
       display: inline-block;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: #e9d5ff;
-      background: rgba(192, 132, 252, 0.15);
-      border: 1px dashed rgba(192, 132, 252, 0.4);
-      padding: 6px 16px;
+      background: rgba(192, 132, 252, 0.2);
+      border: 1px dashed rgba(192, 132, 252, 0.5);
+      padding: 6px 14px;
       border-radius: 20px;
       letter-spacing: 0.5px;
     }
@@ -103,7 +110,7 @@
     .hidden { display: none !important; }
 
     .title {
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       font-weight: 700;
       text-align: center;
       margin-bottom: 12px;
@@ -115,12 +122,12 @@
     .subtitle {
       text-align: center;
       color: var(--text-sub);
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       line-height: 1.6;
       margin-bottom: 24px;
     }
 
-    /* Emoji 浮動呼吸與動態光影動畫 */
+    /* Emoji 浮動與呼吸動畫 */
     .hero-icon {
       font-size: 4.5rem;
       text-align: center;
@@ -132,11 +139,11 @@
     @keyframes floatEmoji {
       0%, 100% {
         transform: translateY(0) scale(1);
-        filter: drop-shadow(0 8px 12px rgba(192, 132, 252, 0.25));
+        filter: drop-shadow(0 8px 12px rgba(192, 132, 252, 0.3));
       }
       50% {
-        transform: translateY(-10px) scale(1.06);
-        filter: drop-shadow(0 16px 20px rgba(56, 189, 248, 0.45));
+        transform: translateY(-8px) scale(1.05);
+        filter: drop-shadow(0 14px 18px rgba(56, 189, 248, 0.4));
       }
     }
 
@@ -151,32 +158,35 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(192, 132, 252, 0.35);
+      box-shadow: 0 6px 15px rgba(192, 132, 252, 0.4);
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
       color: var(--text-main);
       margin-top: 10px;
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
       box-shadow: none;
     }
 
     .progress-bar-container {
       width: 100%;
       height: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       margin-bottom: 20px;
-      overflow: hidden;
     }
 
     .progress-bar {
@@ -187,7 +197,7 @@
     }
 
     .question-count {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--accent);
       font-weight: 600;
       letter-spacing: 1px;
@@ -195,10 +205,10 @@
     }
 
     .question-title {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 600;
       margin-bottom: 20px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .options-list {
@@ -210,18 +220,18 @@
     .option-btn {
       padding: 14px 16px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: var(--text-main);
       text-align: left;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.2s ease;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .option-btn:hover {
-      background: rgba(192, 132, 252, 0.18);
+      background: rgba(192, 132, 252, 0.15);
       border-color: var(--primary);
       transform: translateX(4px);
     }
@@ -231,7 +241,7 @@
     .result-badge {
       display: inline-block;
       padding: 4px 14px;
-      background: rgba(56, 189, 248, 0.12);
+      background: rgba(56, 189, 248, 0.15);
       border: 1px solid var(--accent);
       color: var(--accent);
       border-radius: 20px;
@@ -240,16 +250,17 @@
     }
 
     .result-title {
-      font-size: 1.7rem;
+      font-size: 1.65rem;
       font-weight: 700;
       margin-top: 6px;
+      color: #ffffff;
     }
 
     .battery-status {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.4);
       padding: 12px 16px;
       border-radius: 12px;
       margin-bottom: 16px;
@@ -263,19 +274,19 @@
 
     .stat-group { margin-bottom: 16px; }
 
-    .stat-item { margin-bottom: 8px; }
+    .stat-item { margin-bottom: 10px; }
 
     .stat-label {
       display: flex;
       justify-content: space-between;
       font-size: 0.8rem;
-      color: var(--text-sub);
+      color: #94a3b8;
       margin-bottom: 4px;
     }
 
     .stat-bar-bg {
       height: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -287,19 +298,19 @@
     }
 
     .desc-box {
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.08);
       padding: 14px;
       border-radius: 12px;
       font-size: 0.88rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: #cbd5e1;
       margin-bottom: 12px;
     }
 
     .recharge-box {
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       padding: 12px 14px;
       border-radius: 12px;
       font-size: 0.85rem;
@@ -316,17 +327,18 @@
     }
 
     .match-item {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.3);
       padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 10px;
       text-align: center;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
     }
 
     .match-item span {
       display: block;
-      color: var(--text-sub);
-      font-size: 0.72rem;
+      color: #94a3b8;
+      font-size: 0.7rem;
       margin-bottom: 2px;
     }
 
@@ -334,6 +346,58 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+    }
+
+    /* 📌 專為手機端打造的「彈出式儲存圖卡遮罩」 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9); /* 超暗底色讓內容更顯眼 */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-card {
+      background: #14112e;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+
+    .modal-subtitle {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .modal-img {
+      width: 100%;
+      max-height: 55vh;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .toast {
@@ -348,7 +412,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 999;
+      z-index: 1100;
     }
   </style>
 </head>
@@ -422,8 +486,27 @@
       </div>
 
       <div class="action-buttons">
-        <button class="btn" onclick="downloadResultImage()">📸 生成並下載結果圖卡</button>
+        <button class="btn" onclick="generateResultImage()">📸 生成並下載結果圖卡</button>
         <button class="btn btn-secondary" onclick="restartQuiz()">重新測驗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📸 手機與桌機通用儲存彈出視窗 -->
+  <div id="save-modal" class="modal-overlay hidden">
+    <div class="modal-card fade-in">
+      <div class="modal-title">📸 結果圖卡生成成功！</div>
+      <div class="modal-subtitle">
+        💡 手機用戶：請<b>【長按圖片】</b>並選擇「儲存影像」或分享。<br>
+        💻 電腦用戶：可直接點擊下方按鈕或右鍵另存。
+      </div>
+      <img id="modal-img-element" class="modal-img" src="" alt="長按圖片即可儲存">
+      <div style="font-size: 0.75rem; color: #a855f7; margin-bottom: 12px; font-weight: bold;">
+        ☝️ 這是你的專屬測驗結果圖（長按它就可以囉！）
+      </div>
+      <div class="action-buttons" style="flex-direction: row;">
+        <a id="desktop-download-link" class="btn" href="#" download="我的靈魂動物測驗結果.png" style="flex: 1; font-size: 0.9rem;">💾 電腦下載</a>
+        <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1; margin: 0; font-size: 0.9rem;">關閉 ✕</button>
       </div>
     </div>
   </div>
@@ -435,7 +518,7 @@
       {
         text: "1. 週末下午突然收到朋友群組的臨時聚會邀約訊息，你的第一反應？",
         options: [
-          { text: "直接出門！熱鬧的場態怎麼能少了自己", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "直接出門！熱鬧的場合怎麼能少了自己", weights: { SHIBA: 3, DOLPHIN: 2 } },
           { text: "看當天心情與對象，需要經過 5 分鐘心理建設", weights: { FOX: 3, CAT: 2 } },
           { text: "覺得自己的規劃被打破了，默默尋找禮貌推託的理由", weights: { JELLY: 3, HEDGEHOG: 2 } },
           { text: "回覆：「可能晚點再去放空」或「今天想宅在家」", weights: { CAPYBARA: 3, OWL: 2 } }
@@ -545,7 +628,7 @@
         solo: "88%",
         sens: "85%",
         desc: "你外表看似有防備心，其實內心極度溫柔與細膩。在不熟悉的環境中你會豎起防護刺，需要時間與安全感才能慢慢放鬆。一旦被你認定，你就是最真誠的朋友。",
-        recharge: "⚡ 專屬充電建議：窩在有安全感的被窩角落，看一本溫暖的繪本或重溫熟悉的老電影，讓繃緊的神經慢慢放鬆。",
+        recharge: "⚡ 專屬充電建議：窩在有安全感的被窩角落，看一本溫慢的繪本或重溫熟悉的老電影，讓繃緊的神經慢慢放鬆。",
         best: "高頻共振海豚",
         worst: "不斷電太陽柴犬"
       },
@@ -711,24 +794,42 @@
       document.getElementById("start-screen").classList.remove("hidden");
     }
 
-    function downloadResultImage() {
+    // 📸 新增：手機與桌機通用圖片生成程序
+    function generateResultImage() {
       const captureArea = document.getElementById("capture-area");
       showToast("📸 正在為你生成高解析度圖片中...");
 
+      // 設置生成選項以優化對比與解析度，避免失真
       html2canvas(captureArea, {
-        backgroundColor: "#131238",
-        scale: 2,
-        useCORS: true
+        backgroundColor: "#14112e", // 設置與深夜藍卡片一致的 solid 背景色
+        scale: 2, 
+        useCORS: true,
+        logging: false
       }).then(canvas => {
-        const link = document.createElement("a");
+        const dataUrl = canvas.toDataURL("image/png");
+        
+        // 1. 手機端長按圖片必備：插入圖片到 Pop-up 中
+        const imgElement = document.getElementById("modal-img-element");
+        imgElement.src = dataUrl;
+
+        // 2. 電腦端下載：綁定檔案鏈接
         const title = document.getElementById("res-title").innerText;
-        link.download = `靈魂動物測驗結果_${title}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-        showToast("✨ 圖片已成功生成並下載！");
+        const downloadBtn = document.getElementById("desktop-download-link");
+        downloadBtn.href = dataUrl;
+        downloadBtn.download = `靈魂動物測驗結果_${title}.png`;
+
+        // 顯示彈出視窗
+        document.getElementById("save-modal").classList.remove("hidden");
+        
+        showToast("✨ 圖片生成成功！");
       }).catch(err => {
-        showToast("❌ 生成失敗，請重試！");
+        console.error(err);
+        showToast("❌ 圖片生成失敗，請再試一次！");
       });
+    }
+
+    function closeModal() {
+      document.getElementById("save-modal").classList.add("hidden");
     }
 
     function showToast(msg) {
