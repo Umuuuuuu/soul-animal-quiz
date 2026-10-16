@@ -6,6 +6,8 @@
   <title>靈魂動物與精神棲息地測驗</title>
   <!-- 引入 Google 圓潤質感中文字體 -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- 引入 html2canvas 網頁轉圖片套件 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%);
@@ -328,6 +330,12 @@
       margin-bottom: 2px;
     }
 
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     .toast {
       position: fixed;
       bottom: 24px;
@@ -340,6 +348,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 999;
     }
   </style>
 </head>
@@ -349,7 +358,7 @@
     <!-- 封面頁面 -->
     <div id="start-screen">
       <div class="notice-wrapper">
-        <span class="notice-tag">✨ 這是我的通識課作業 希望大家不要太苛刻 ⸜(｡˃ ᵕ ˂ )⸝♡ ✨</span>
+        <span class="notice-tag">✨ 這是我的通識課作業 希望大家不要太苛刻 ⸜(｡˃ ᵕ ˂ ) Engine♡ ✨</span>
       </div>
       <div class="hero-icon">🔮</div>
       <h1 class="title">靈魂動物與精神棲息地</h1>
@@ -369,60 +378,64 @@
 
     <!-- 結果頁面 -->
     <div id="result-screen" class="hidden">
-      <div class="result-header">
-        <div class="result-badge" id="res-shield">防護罩載入中</div>
-        <div class="hero-icon" id="res-icon">🪼</div>
-        <h2 class="result-title" id="res-title">深海微光水母</h2>
-      </div>
-
-      <div class="battery-status">
-        <span style="color: var(--text-sub); font-size: 0.85rem;">預設社交電池容量</span>
-        <span class="battery-level" id="res-battery">15%</span>
-      </div>
-
-      <div class="stat-group">
-        <div class="stat-item">
-          <div class="stat-label"><span>獨處需求度</span><span id="stat-solo-val">95%</span></div>
-          <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-solo-bar" style="width: 95%;"></div></div>
+      <div id="capture-area">
+        <div class="result-header">
+          <div class="result-badge" id="res-shield">防護罩載入中</div>
+          <div class="hero-icon" id="res-icon">🪼</div>
+          <h2 class="result-title" id="res-title">深海微光水母</h2>
         </div>
-        <div class="stat-item">
-          <div class="stat-label"><span>感官敏感度</span><span id="stat-sens-val">90%</span></div>
-          <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-sens-bar" style="width: 90%; background: var(--accent);"></div></div>
+
+        <div class="battery-status">
+          <span style="color: var(--text-sub); font-size: 0.85rem;">預設社交電池容量</span>
+          <span class="battery-level" id="res-battery">15%</span>
+        </div>
+
+        <div class="stat-group">
+          <div class="stat-item">
+            <div class="stat-label"><span>獨處需求度</span><span id="stat-solo-val">95%</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-solo-bar" style="width: 95%;"></div></div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label"><span>感官敏感度</span><span id="stat-sens-val">90%</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-sens-bar" style="width: 90%; background: var(--accent);"></div></div>
+          </div>
+        </div>
+
+        <div class="desc-box" id="res-desc">
+          分析載入中...
+        </div>
+
+        <div class="recharge-box" id="res-recharge">
+          ⚡ 專屬充電建議載入中...
+        </div>
+
+        <div class="match-box">
+          <div class="match-item">
+            <span>靈魂共振搭檔</span>
+            <strong id="res-best" style="color: #34d399;">-</strong>
+          </div>
+          <div class="match-item">
+            <span>能量相剋對象</span>
+            <strong id="res-worst" style="color: #f87171;">-</strong>
+          </div>
         </div>
       </div>
 
-      <div class="desc-box" id="res-desc">
-        分析載入中...
+      <div class="action-buttons">
+        <button class="btn" onclick="downloadResultImage()">📸 生成並下載結果圖卡</button>
+        <button class="btn btn-secondary" onclick="restartQuiz()">重新測驗</button>
       </div>
-
-      <div class="recharge-box" id="res-recharge">
-        ⚡ 專屬充電建議載入中...
-      </div>
-
-      <div class="match-box">
-        <div class="match-item">
-          <span>靈魂共振搭檔</span>
-          <strong id="res-best" style="color: #34d399;">-</strong>
-        </div>
-        <div class="match-item">
-          <span>能量相剋對象</span>
-          <strong id="res-worst" style="color: #f87171;">-</strong>
-        </div>
-      </div>
-
-      <button class="btn" onclick="copyResult()">一鍵複製測驗結果</button>
-      <button class="btn btn-secondary" onclick="restartQuiz()">重新測驗</button>
     </div>
   </div>
 
-  <div id="toast" class="toast hidden">測驗結果已成功複製到剪貼簿！</div>
+  <div id="toast" class="toast hidden">提示訊息</div>
 
   <script>
     const questions = [
       {
         text: "1. 週末下午突然收到朋友群組的臨時聚會邀約訊息，你的第一反應？",
         options: [
-          { text: "直接出門！熱鬧的場合怎麼能少了自己", weights: { SHIBA: 3, DOLPHIN: 2 } },
+          { text: "直接出門！熱鬧的場態怎麼能少了自己", weights: { SHIBA: 3, DOLPHIN: 2 } },
           { text: "看當天心情與對象，需要經過 5 分鐘心理建設", weights: { FOX: 3, CAT: 2 } },
           { text: "覺得自己的規劃被打破了，默默尋找禮貌推託的理由", weights: { JELLY: 3, HEDGEHOG: 2 } },
           { text: "回覆：「可能晚點再去放空」或「今天想宅在家」", weights: { CAPYBARA: 3, OWL: 2 } }
@@ -698,18 +711,31 @@
       document.getElementById("start-screen").classList.remove("hidden");
     }
 
-    function copyResult() {
-      const title = document.getElementById("res-title").innerText;
-      const battery = document.getElementById("res-battery").innerText;
-      const shield = document.getElementById("res-shield").innerText;
-      const recharge = document.getElementById("res-recharge").innerText;
-      const text = `【靈魂動物與精神棲息地測驗】\n我的靈魂型態是：${title}！\n預設社交電池容量：${battery}\n${shield}\n${recharge}\n快來測測你的靈魂動物吧！`;
+    function downloadResultImage() {
+      const captureArea = document.getElementById("capture-area");
+      showToast("📸 正在為你生成高解析度圖片中...");
 
-      navigator.clipboard.writeText(text).then(() => {
-        const toast = document.getElementById("toast");
-        toast.classList.remove("hidden");
-        setTimeout(() => toast.classList.add("hidden"), 2200);
+      html2canvas(captureArea, {
+        backgroundColor: "#131238",
+        scale: 2,
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement("a");
+        const title = document.getElementById("res-title").innerText;
+        link.download = `靈魂動物測驗結果_${title}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        showToast("✨ 圖片已成功生成並下載！");
+      }).catch(err => {
+        showToast("❌ 生成失敗，請重試！");
       });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 2500);
     }
   </script>
 </body>
